@@ -11,8 +11,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 
-namespace HelloSimple {
-    class HelloSubscriber : DDS.DataReaderListener {
+namespace Ptp {
+    class PtpSlave : DDS.DataReaderListener {
 
         // For clean shutdown sequence
         private static bool shutdown_flag = false;
@@ -47,7 +47,7 @@ namespace HelloSimple {
                                 participant.create_datareader(
                                 topic,
                                 DDS.Subscriber.DATAREADER_QOS_DEFAULT,
-                                new HelloSubscriber(),
+                                new PtpSlave(),
                                 DDS.StatusMask.STATUS_MASK_ALL);
             if (reader == null) {
                 Console.WriteLine("! Unable to create DDS Data Reader");

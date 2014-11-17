@@ -10,8 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace HelloSimple {
-    class HelloPublisher {
+namespace Ptp {
+    class PtpMaster {
         public static void Main(string[] argv) {
             // Create the DDS Domain participant on domain ID 0
             DDS.DomainParticipant participant =
