@@ -60,15 +60,13 @@
   </Target>
   -->
   <ItemGroup>
-    <Compile Include="..\src\HelloPublisher.cs">
-      <SubType>Code</SubType>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="nddsdotnet451">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\lib\x64Win64dotnet4.5.1\nddsdotnet451.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Master.cs" />
   </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>copy /y  "$(NDDSHOME)\lib\x64Win64dotnet4.5.1\*.dll"  "$(TargetDir)"</PostBuildEvent>

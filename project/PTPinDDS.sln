@@ -1,8 +1,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloPublisher64", "HelloPublisher64.csproj", "{22D03237-51E5-4D52-B171-F61A07473038}"
+VisualStudioVersion = 12.0.30501.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PTP-Master", "PTP-Master.csproj", "{22D03237-51E5-4D52-B171-F61A07473038}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloSubscriber64", "HelloSubscriber64.csproj", "{53C9EB86-75A8-421B-88CA-B885A4487235}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PTP-Slave", "PTP-Slave.csproj", "{53C9EB86-75A8-421B-88CA-B885A4487235}"
 	ProjectSection(ProjectDependencies) = postProject
 		{22D03237-51E5-4D52-B171-F61A07473038} = {22D03237-51E5-4D52-B171-F61A07473038}
 	EndProjectSection
