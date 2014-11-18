@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{53C9EB86-75A8-421B-88CA-B885A4487235}</ProjectGuid>
+    <ProjectGuid>{22D03237-51E5-4D52-B171-F61A07473038}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>HelloSubscriber</RootNamespace>
-    <AssemblyName>HelloSubscriber</AssemblyName>
+    <RootNamespace>PtpMaster</RootNamespace>
+    <AssemblyName>PtpMaster</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
@@ -66,7 +66,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PtpSlave.cs" />
+    <Compile Include="Master.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TopicHelpers\Helpers.csproj">
+      <Project>{c2254930-4f0f-43f0-817b-44cde72c73ee}</Project>
+      <Name>Helpers</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>copy /y  "$(NDDSHOME)\lib\x64Win64dotnet4.5.1\*.dll"  "$(TargetDir)"</PostBuildEvent>

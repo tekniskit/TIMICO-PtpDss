@@ -1,0 +1,6 @@
+C:\Users\mje\Desktop\TIMICO\PTP-exercise\TopicHelpers\bin\Debug\TopicHelpers.dll
+C:\Users\mje\Desktop\TIMICO\PTP-exercise\TopicHelpers\bin\Debug\TopicHelpers.pdb
+C:\Users\mje\Desktop\TIMICO\PTP-exercise\TopicHelpers\obj\Debug\TopicHelpers.dll
+C:\Users\mje\Desktop\TIMICO\PTP-exercise\TopicHelpers\obj\Debug\TopicHelpers.pdb
+C:\Users\mje\Desktop\TIMICO\PTP-exercise\TopicHelpers\obj\Debug\TopicHelpers.csprojResolveAssemblyReference.cache
+C:\Users\mje\Desktop\TIMICO\PTP-exercise\TopicHelpers\bin\Debug\nddsdotnet451.dll

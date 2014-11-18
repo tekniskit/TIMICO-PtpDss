@@ -9,9 +9,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 
-namespace Ptp {
-    class PtpMaster {
+namespace PtpMaster {
+    class Master {
         public static void Main(string[] argv) {
             // Create the DDS Domain participant on domain ID 0
             DDS.DomainParticipant participant =
@@ -25,46 +26,65 @@ namespace Ptp {
                 return;
             }
 
-            // Create the topic "Hello World" for the String type
-            DDS.Topic topic = participant.create_topic(
-                        "Hello, World",
+            // Create the topic "Sync" for the String type
+            DDS.Topic syncTopic = participant.create_topic(
+                        "Sync",
                         DDS.StringTypeSupport.get_type_name(),
                         DDS.DomainParticipant.TOPIC_QOS_DEFAULT,
                         null, /* Listener */
                         DDS.StatusMask.STATUS_MASK_NONE);
-            if (topic == null) {
+
+            // Create the topic "Follow-up" for the String type
+            DDS.Topic followUpTopic = participant.create_topic(
+                        "Follow-up",
+                        DDS.StringTypeSupport.get_type_name(),
+                        DDS.DomainParticipant.TOPIC_QOS_DEFAULT,
+                        null, /* Listener */
+                        DDS.StatusMask.STATUS_MASK_NONE);
+            if (syncTopic == null || followUpTopic == null)
+            {
                 Console.Error.WriteLine("Unable to create topic");
                 return;
             }
 
             // Create the data writer using the default publisher
-            DDS.StringDataWriter ddsWriter = (DDS.StringDataWriter)participant.create_datawriter(
-                            topic,
+            DDS.StringDataWriter syncWriter = (DDS.StringDataWriter)participant.create_datawriter(
+                            syncTopic,
                             DDS.Publisher.DATAWRITER_QOS_DEFAULT,
                             null, /* Listener */
                             DDS.StatusMask.STATUS_MASK_NONE);
-            if (ddsWriter == null) {
+            DDS.StringDataWriter followUpWriter = (DDS.StringDataWriter)participant.create_datawriter(
+                            followUpTopic,
+                            DDS.Publisher.DATAWRITER_QOS_DEFAULT,
+                            null, /* Listener */
+                            DDS.StatusMask.STATUS_MASK_NONE);
+            if (syncWriter == null || followUpWriter == null) {
                 Console.Error.WriteLine("Unable to create DDS data writer");
                 return;
             }
 
-            Console.WriteLine("Ready to write data.");
-            Console.WriteLine("When the subscriber is ready, you can start writing.");
-            Console.Write("Press CTRL+C to terminate or enter an empty line to do a clean shutdown.\n\n");
-
             for (; ; ) {
-                Console.Write("Please type a message> ");
-                string toWrite = Console.In.ReadLine();
+                Thread.Sleep(5000);
+                string currentTime = DateTime.Now.ToString("hh.mm.ss.ffffff");
+                Console.WriteLine("Sync sent: " + currentTime);
                 try {
-                    ddsWriter.write(toWrite, ref DDS.InstanceHandle_t.HANDLE_NIL);
+                    syncWriter.write(currentTime, ref DDS.InstanceHandle_t.HANDLE_NIL);
                 }
                 catch (DDS.Retcode_Error e) {
                     Console.Error.WriteLine("Write error: " + e.Message);
                     break;
                 }
-                if (toWrite == "") {
+
+                try
+                {
+                    followUpWriter.write(currentTime, ref DDS.InstanceHandle_t.HANDLE_NIL);
+                }
+                catch (DDS.Retcode_Error e)
+                {
+                    Console.Error.WriteLine("Write error: " + e.Message);
                     break;
                 }
+
             }
             Console.WriteLine("Shutting down...");
             participant.delete_contained_entities();

@@ -5,17 +5,18 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{22D03237-51E5-4D52-B171-F61A07473038}</ProjectGuid>
+    <ProjectGuid>{53C9EB86-75A8-421B-88CA-B885A4487235}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>HelloPublisher</RootNamespace>
-    <AssemblyName>HelloPublisher</AssemblyName>
+    <RootNamespace>PtpSlave</RootNamespace>
+    <AssemblyName>PtpSlave</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>2.0</OldToolsVersion>
     <UpgradeBackupLocation />
     <TargetFrameworkProfile />
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -28,7 +29,6 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -66,7 +66,30 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PtpMaster.cs" />
+    <Compile Include="Slave.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TopicHelpers\Helpers.csproj">
+      <Project>{c2254930-4f0f-43f0-817b-44cde72c73ee}</Project>
+      <Name>Helpers</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.5.1">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.5.1 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>copy /y  "$(NDDSHOME)\lib\x64Win64dotnet4.5.1\*.dll"  "$(TargetDir)"</PostBuildEvent>

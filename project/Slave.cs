@@ -10,14 +10,17 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using Helpers;
 
-namespace Ptp {
-    class PtpSlave : DDS.DataReaderListener {
-
+namespace PtpSlave {
+    class Slave {
         // For clean shutdown sequence
         private static bool shutdown_flag = false;
-
+        private static SlaveClock _slaveClock = new SlaveClock();
         public static void Main(string[] argv) {
+            // Setup clock
+            _slaveClock.Time = DateTime.Now;
+
             // Create the DDS Domain participant on domain ID 0
             DDS.DomainParticipant participant =
                 DDS.DomainParticipantFactory.get_instance().create_participant(
@@ -30,26 +33,40 @@ namespace Ptp {
                 return;
             }
 
-            // Create the topic "Hello World" for the String type
-            DDS.Topic topic = participant.create_topic(
-                        "Hello, World",
+            // Create the topic "Sync" for the String type
+            DDS.Topic syncTopic = participant.create_topic(
+                        "Sync",
                         DDS.StringTypeSupport.get_type_name(),
                         DDS.DomainParticipant.TOPIC_QOS_DEFAULT,
                         null, /* Listener */
                         DDS.StatusMask.STATUS_MASK_NONE);
-            if (topic == null) {
+            DDS.Topic followUpTopic = participant.create_topic(
+                        "Follow-up",
+                        DDS.StringTypeSupport.get_type_name(),
+                        DDS.DomainParticipant.TOPIC_QOS_DEFAULT,
+                        null, /* Listener */
+                        DDS.StatusMask.STATUS_MASK_NONE);
+            if (syncTopic == null || followUpTopic == null) {
                 Console.Error.WriteLine("Unable to create topic");
                 return;
             }
 
             // Create the data reader using the default publisher
-            DDS.StringDataReader reader = (DDS.StringDataReader)
+            DDS.StringDataReader syncReader = (DDS.StringDataReader)
                                 participant.create_datareader(
-                                topic,
+                                syncTopic,
                                 DDS.Subscriber.DATAREADER_QOS_DEFAULT,
-                                new PtpSlave(),
+                                new SyncSlaveListener() {SlaveClock = _slaveClock},
                                 DDS.StatusMask.STATUS_MASK_ALL);
-            if (reader == null) {
+            DDS.StringDataReader followUpReader = (DDS.StringDataReader)
+                                participant.create_datareader(
+                                followUpTopic,
+                                DDS.Subscriber.DATAREADER_QOS_DEFAULT,
+                                new FollowUpSlaveListener() { SlaveClock = _slaveClock },
+                                DDS.StatusMask.STATUS_MASK_ALL);
+
+
+            if (syncReader == null || followUpReader == null) {
                 Console.WriteLine("! Unable to create DDS Data Reader");
                 return;
             }
@@ -57,9 +74,11 @@ namespace Ptp {
             Console.WriteLine("Ready to read data.");
             Console.WriteLine("Press CTRL+C to terminate.");
             for (; ; ) {
-                Thread.Sleep(2000);
+                //Thread.Sleep(2000);
+                _slaveClock.Oscillate();
+                Console.WriteLine(_slaveClock.Time.ToString("hh.mm.ss.ffffff") + " (SlaveLoop after oscillate)");
             if (shutdown_flag) {
-                     break;
+                break;
                 }
             }
             Console.WriteLine("Shutting down...");
@@ -71,28 +90,28 @@ namespace Ptp {
          * This method gets called back by DDS when one or more data samples have
          * been received.
          */
-        public override void on_data_available(DDS.DataReader reader) {
-            DDS.StringDataReader stringReader = (DDS.StringDataReader)reader;
-            DDS.SampleInfo info = new DDS.SampleInfo();
-            for(;;) {
-                try {
-                    string sample = stringReader.take_next_sample(info);
-                    Console.WriteLine(sample);
-                    if(sample == ""){
-                        shutdown_flag = true;
-                    }
-                }
-                catch(DDS.Retcode_NoData) {
-                    // No more data to read
-                    break;
-                }
-                catch(DDS.Exception e) {
-                    // An error occurred in DDS
-                    Console.WriteLine(e.StackTrace);
-                    break;
-                }
-            }
-        }
+        //public override void on_data_available(DDS.DataReader reader) {
+        //    DDS.StringDataReader stringReader = (DDS.StringDataReader)reader;
+        //    DDS.SampleInfo info = new DDS.SampleInfo();
+        //    for(;;) {
+        //        try {
+        //            string sample = stringReader.take_next_sample(info);
+        //            Console.WriteLine(sample);
+        //            if(sample == ""){
+        //                shutdown_flag = true;
+        //            }
+        //        }
+        //        catch(DDS.Retcode_NoData) {
+        //            // No more data to read
+        //            break;
+        //        }
+        //        catch(DDS.Exception e) {
+        //            // An error occurred in DDS
+        //            Console.WriteLine(e.StackTrace);
+        //            break;
+        //        }
+        //    }
+        //}
     }
 }
 
