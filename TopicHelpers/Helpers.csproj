@@ -42,6 +42,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DelayRequestMasterListener.cs" />
+    <Compile Include="DelayResponseSlaveListener.cs" />
     <Compile Include="FollowUpSlaveListener.cs" />
     <Compile Include="SlaveClock.cs" />
     <Compile Include="SyncSlaveListener.cs" />

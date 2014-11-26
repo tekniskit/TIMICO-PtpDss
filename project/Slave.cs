@@ -46,7 +46,20 @@ namespace PtpSlave {
                         DDS.DomainParticipant.TOPIC_QOS_DEFAULT,
                         null, /* Listener */
                         DDS.StatusMask.STATUS_MASK_NONE);
-            if (syncTopic == null || followUpTopic == null) {
+            DDS.Topic delayResponseTopic = participant.create_topic(
+                        "Delay response",
+                        DDS.StringTypeSupport.get_type_name(),
+                        DDS.DomainParticipant.TOPIC_QOS_DEFAULT,
+                        null, /* Listener */
+                        DDS.StatusMask.STATUS_MASK_NONE);
+            DDS.Topic delayRequestTopic = participant.create_topic(
+                        "Delay request",
+                        DDS.StringTypeSupport.get_type_name(),
+                        DDS.DomainParticipant.TOPIC_QOS_DEFAULT,
+                        null, /* Listener */
+                        DDS.StatusMask.STATUS_MASK_NONE);
+
+            if (syncTopic == null || followUpTopic == null || delayResponseTopic == null || delayRequestTopic == null) {
                 Console.Error.WriteLine("Unable to create topic");
                 return;
             }
@@ -64,18 +77,43 @@ namespace PtpSlave {
                                 DDS.Subscriber.DATAREADER_QOS_DEFAULT,
                                 new FollowUpSlaveListener() { SlaveClock = _slaveClock },
                                 DDS.StatusMask.STATUS_MASK_ALL);
+            DDS.StringDataReader delayResponseReader = (DDS.StringDataReader)
+                                participant.create_datareader(
+                                delayResponseTopic,
+                                DDS.Subscriber.DATAREADER_QOS_DEFAULT,
+                                new DelayResponseSlaveListener() { SlaveClock = _slaveClock },
+                                DDS.StatusMask.STATUS_MASK_ALL);
 
 
-            if (syncReader == null || followUpReader == null) {
+            if (syncReader == null || followUpReader == null || delayResponseReader == null) {
                 Console.WriteLine("! Unable to create DDS Data Reader");
                 return;
             }
 
-            Console.WriteLine("Ready to read data.");
-            Console.WriteLine("Press CTRL+C to terminate.");
+            // Delay request writer
+            DDS.StringDataWriter delayRequestWriter = (DDS.StringDataWriter)participant.create_datawriter(
+                            delayRequestTopic,
+                            DDS.Publisher.DATAWRITER_QOS_DEFAULT,
+                            null, /* Listener */
+                            DDS.StatusMask.STATUS_MASK_NONE);
+            
+            if (delayRequestWriter == null)
+            {
+                Console.Error.WriteLine("Unable to create DDS data writer");
+                return;
+            }
+
+            
             for (; ; ) {
-                //Thread.Sleep(2000);
                 _slaveClock.Oscillate();
+                if (_slaveClock.TimeForDelayRequest)
+                {
+                    // DELAY REQUEST
+                    delayRequestWriter.write("Delay request", ref DDS.InstanceHandle_t.HANDLE_NIL);
+                    Console.WriteLine("Sent: Delay request");
+                    _slaveClock.TimeForDelayRequest = false;
+                    _slaveClock.TsDelayStart = _slaveClock.Time;
+                }
                 Console.WriteLine(_slaveClock.Time.ToString("hh.mm.ss.ffffff"));
             if (shutdown_flag) {
                 break;
@@ -85,33 +123,6 @@ namespace PtpSlave {
             participant.delete_contained_entities();
             DDS.DomainParticipantFactory.get_instance().delete_participant(ref participant);
         }
-
-        /*
-         * This method gets called back by DDS when one or more data samples have
-         * been received.
-         */
-        //public override void on_data_available(DDS.DataReader reader) {
-        //    DDS.StringDataReader stringReader = (DDS.StringDataReader)reader;
-        //    DDS.SampleInfo info = new DDS.SampleInfo();
-        //    for(;;) {
-        //        try {
-        //            string sample = stringReader.take_next_sample(info);
-        //            Console.WriteLine(sample);
-        //            if(sample == ""){
-        //                shutdown_flag = true;
-        //            }
-        //        }
-        //        catch(DDS.Retcode_NoData) {
-        //            // No more data to read
-        //            break;
-        //        }
-        //        catch(DDS.Exception e) {
-        //            // An error occurred in DDS
-        //            Console.WriteLine(e.StackTrace);
-        //            break;
-        //        }
-        //    }
-        //}
     }
 }
 

@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Helpers
 {
-    public class FollowUpSlaveListener : DDS.DataReaderListener
+    public class DelayRequestMasterListener : DDS.DataReaderListener
     {
         // For clean shutdown sequence
         private static bool shutdown_flag = false;
-        public SlaveClock SlaveClock { get; set; }
+        public DDS.StringDataWriter ResponseWriter { get; set; }
 
         public override void on_data_available(DDS.DataReader reader)
         {
@@ -21,16 +20,13 @@ namespace Helpers
             try
             {
                 string sample = stringReader.take_next_sample(info);
-                Console.WriteLine("Follow-up received");
+                Console.WriteLine("DelayRequest received: " + sample);
                 
-                var format = "hh.mm.ss.ffffff";
-                CultureInfo provider = CultureInfo.InvariantCulture;
-                var Tm1 = DateTime.ParseExact(sample, format, provider);
+                string currentTime = DateTime.Now.ToString("hh.mm.ss.ffffff");
+                ResponseWriter.write(currentTime, ref DDS.InstanceHandle_t.HANDLE_NIL);
+                Console.WriteLine("DelayResponse sent: " + currentTime);
+                Console.WriteLine();
 
-                var offset = SlaveClock.Ts1 - Tm1; // - 0
-
-                SlaveClock.Time -= offset;
-                SlaveClock.TimeForDelayRequest = true;
                 if (sample == "")
                 {
                     shutdown_flag = true;

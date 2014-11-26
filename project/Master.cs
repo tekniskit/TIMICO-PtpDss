@@ -10,9 +10,12 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using Helpers;
 
 namespace PtpMaster {
-    class Master {
+    class Master
+    {
+        private static int _timeWaster = 0;
         public static void Main(string[] argv) {
             // Create the DDS Domain participant on domain ID 0
             DDS.DomainParticipant participant =
@@ -26,6 +29,7 @@ namespace PtpMaster {
                 return;
             }
 
+            #region topics
             // Create the topic "Sync" for the String type
             DDS.Topic syncTopic = participant.create_topic(
                         "Sync",
@@ -41,12 +45,29 @@ namespace PtpMaster {
                         DDS.DomainParticipant.TOPIC_QOS_DEFAULT,
                         null, /* Listener */
                         DDS.StatusMask.STATUS_MASK_NONE);
-            if (syncTopic == null || followUpTopic == null)
+            DDS.Topic delayResponseTopic = participant.create_topic(
+                        "Delay response",
+                        DDS.StringTypeSupport.get_type_name(),
+                        DDS.DomainParticipant.TOPIC_QOS_DEFAULT,
+                        null, /* Listener */
+                        DDS.StatusMask.STATUS_MASK_NONE);
+            DDS.Topic delayRequestTopic = participant.create_topic(
+                        "Delay request",
+                        DDS.StringTypeSupport.get_type_name(),
+                        DDS.DomainParticipant.TOPIC_QOS_DEFAULT,
+                        null, /* Listener */
+                        DDS.StatusMask.STATUS_MASK_NONE);
+
+            if (syncTopic == null || followUpTopic == null || delayResponseTopic == null || delayRequestTopic == null)
             {
                 Console.Error.WriteLine("Unable to create topic");
                 return;
             }
 
+#endregion
+            
+            
+            #region writers
             // Create the data writer using the default publisher
             DDS.StringDataWriter syncWriter = (DDS.StringDataWriter)participant.create_datawriter(
                             syncTopic,
@@ -58,33 +79,60 @@ namespace PtpMaster {
                             DDS.Publisher.DATAWRITER_QOS_DEFAULT,
                             null, /* Listener */
                             DDS.StatusMask.STATUS_MASK_NONE);
-            if (syncWriter == null || followUpWriter == null) {
+
+            DDS.StringDataWriter delayResponseWriter = (DDS.StringDataWriter)participant.create_datawriter(
+                            delayResponseTopic,
+                            DDS.Publisher.DATAWRITER_QOS_DEFAULT,
+                            null, /* Listener */
+                            DDS.StatusMask.STATUS_MASK_NONE);
+            if (syncWriter == null || followUpWriter == null || delayResponseWriter == null) {
                 Console.Error.WriteLine("Unable to create DDS data writer");
                 return;
             }
+            #endregion
+            #region readers
+            DDS.StringDataReader delayRequestReader = (DDS.StringDataReader)
+                                participant.create_datareader(
+                                delayRequestTopic,
+                                DDS.Subscriber.DATAREADER_QOS_DEFAULT,
+                                new DelayRequestMasterListener() {ResponseWriter = delayResponseWriter},
+                                DDS.StatusMask.STATUS_MASK_ALL);
 
+
+            if (delayRequestReader == null)
+            {
+                Console.WriteLine("! Unable to create DDS Data Reader");
+                return;
+            }
+            #endregion
             for (; ; ) {
-                Thread.Sleep(5000);
-                string currentTime = DateTime.Now.ToString("hh.mm.ss.ffffff");
-                Console.WriteLine("Sync sent: " + currentTime);
-                try {
-                    syncWriter.write(currentTime, ref DDS.InstanceHandle_t.HANDLE_NIL);
-                }
-                catch (DDS.Retcode_Error e) {
-                    Console.Error.WriteLine("Write error: " + e.Message);
-                    break;
-                }
-
-                try
+                //Thread.Sleep(10000);
+                _timeWaster++;
+                if (_timeWaster % 1000000000 == 0)
                 {
-                    followUpWriter.write(currentTime, ref DDS.InstanceHandle_t.HANDLE_NIL);
-                }
-                catch (DDS.Retcode_Error e)
-                {
-                    Console.Error.WriteLine("Write error: " + e.Message);
-                    break;
-                }
+                    string currentTime = DateTime.Now.ToString("hh.mm.ss.ffffff");
+                    try
+                    {
+                        Console.WriteLine("Sync sent: " + currentTime);
+                        syncWriter.write(currentTime, ref DDS.InstanceHandle_t.HANDLE_NIL);
+                    }
+                    catch (DDS.Retcode_Error e)
+                    {
+                        Console.Error.WriteLine("Write error: " + e.Message);
+                        break;
+                    }
 
+                    try
+                    {
+                        Console.WriteLine("Follow-up sent: " + DateTime.Now.ToString("hh.mm.ss.ffffff"));
+                        followUpWriter.write(currentTime, ref DDS.InstanceHandle_t.HANDLE_NIL);
+                    }
+                    catch (DDS.Retcode_Error e)
+                    {
+                        Console.Error.WriteLine("Write error: " + e.Message);
+                        break;
+                    }
+                }
             }
             Console.WriteLine("Shutting down...");
             participant.delete_contained_entities();
