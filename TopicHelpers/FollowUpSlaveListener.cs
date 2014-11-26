@@ -22,13 +22,15 @@ namespace Helpers
             {
                 string sample = stringReader.take_next_sample(info);
                 Console.WriteLine("Follow-up received");
-                var formatInfo = new DateTimeFormatInfo();
-
-                var time = DateTime.ParseExact(sample, "hh.mm.ss.ffffff", null);
                 
-                // time += something?
 
-                SlaveClock.Time = time;
+                var format = "hh.mm.ss.ffffff";
+                CultureInfo provider = CultureInfo.InvariantCulture;
+                var Tm1 = DateTime.ParseExact(sample, format, provider);
+
+                var offset = SlaveClock.Ts1 - Tm1; // - 0
+
+                SlaveClock.Time -= offset;
                 if (sample == "")
                 {
                     shutdown_flag = true;

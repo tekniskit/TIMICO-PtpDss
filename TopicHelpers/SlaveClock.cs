@@ -9,13 +9,17 @@ namespace Helpers
     public class SlaveClock
     {
         public DateTime Time { get; set; }
-        public DateTime LastSyncAt { get; set; }
+        public DateTime Ts1 { get; set; }
+        public DateTime TsDelayStart { get; set; }
         private Random _random = new Random();
 
         public void Oscillate()
         {
-            var milliSeconds = _random.Next(2); // Time is "ticking"
-            Time += new TimeSpan(0, 0, 0, 0, milliSeconds);
+            if (_random.Next(2) > 0)
+            {
+                var milliSeconds = _random.Next(2); // Time is "ticking"
+                Time += new TimeSpan(0, 0, 0, 0, milliSeconds);
+            }
         }
     }
 }

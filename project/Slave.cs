@@ -76,7 +76,7 @@ namespace PtpSlave {
             for (; ; ) {
                 //Thread.Sleep(2000);
                 _slaveClock.Oscillate();
-                Console.WriteLine(_slaveClock.Time.ToString("hh.mm.ss.ffffff") + " (SlaveLoop after oscillate)");
+                Console.WriteLine(_slaveClock.Time.ToString("hh.mm.ss.ffffff"));
             if (shutdown_flag) {
                 break;
                 }

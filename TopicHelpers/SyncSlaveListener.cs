@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,6 +22,7 @@ namespace Helpers
             try
             {
                 string sample = stringReader.take_next_sample(info);
+                SlaveClock.Ts1 = SlaveClock.Time;
                 Console.WriteLine(sample);
 
                 if (sample == "")
