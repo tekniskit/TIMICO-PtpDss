@@ -64,9 +64,7 @@ namespace PtpMaster {
                 return;
             }
 
-#endregion
-            
-            
+#endregion           
             #region writers
             // Create the data writer using the default publisher
             DDS.StringDataWriter syncWriter = (DDS.StringDataWriter)participant.create_datawriter(
@@ -95,7 +93,7 @@ namespace PtpMaster {
                                 participant.create_datareader(
                                 delayRequestTopic,
                                 DDS.Subscriber.DATAREADER_QOS_DEFAULT,
-                                new DelayRequestMasterListener() {ResponseWriter = delayResponseWriter},
+                                new DelayRequestMasterListener() {ResponseWriter = delayResponseWriter}, // "Connecting" DelayRequestMasterListener
                                 DDS.StatusMask.STATUS_MASK_ALL);
 
 
@@ -106,11 +104,10 @@ namespace PtpMaster {
             }
             #endregion
             for (; ; ) {
-                //Thread.Sleep(10000);
                 _timeWaster++;
                 if (_timeWaster % 1000000000 == 0)
                 {
-                    string currentTime = DateTime.Now.ToString("hh.mm.ss.ffffff");
+                    var currentTime = DateTime.Now.ToString("hh.mm.ss.ffffff");
                     try
                     {
                         Console.WriteLine("Sync sent: " + currentTime);

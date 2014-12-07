@@ -32,7 +32,7 @@ namespace PtpSlave {
                 Console.Error.WriteLine("Unable to create DDS domain participant");
                 return;
             }
-
+            #region topics
             // Create the topic "Sync" for the String type
             DDS.Topic syncTopic = participant.create_topic(
                         "Sync",
@@ -63,7 +63,8 @@ namespace PtpSlave {
                 Console.Error.WriteLine("Unable to create topic");
                 return;
             }
-
+            #endregion
+            #region readers
             // Create the data reader using the default publisher
             DDS.StringDataReader syncReader = (DDS.StringDataReader)
                                 participant.create_datareader(
@@ -90,6 +91,8 @@ namespace PtpSlave {
                 return;
             }
 
+            #endregion
+            #region writer
             // Delay request writer
             DDS.StringDataWriter delayRequestWriter = (DDS.StringDataWriter)participant.create_datawriter(
                             delayRequestTopic,
@@ -103,7 +106,8 @@ namespace PtpSlave {
                 return;
             }
 
-            
+            #endregion
+
             for (; ; ) {
                 _slaveClock.Oscillate();
                 if (_slaveClock.TimeForDelayRequest)
