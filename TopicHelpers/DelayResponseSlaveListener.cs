@@ -20,7 +20,7 @@ namespace Helpers
 
             try
             {
-                string sample = stringReader.read_next_sample(info); //string sample = stringReader.take_next_sample(info);
+                var sample = stringReader.take_next_sample(info);
                 Console.WriteLine("Delay response received");
                 
                 var format = "hh.mm.ss.ffffff";
