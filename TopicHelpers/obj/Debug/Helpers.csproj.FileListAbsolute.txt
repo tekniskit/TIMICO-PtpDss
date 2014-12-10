@@ -6,6 +6,5 @@ C:\Users\mje\Desktop\TIMICO\PTP-exercise\TopicHelpers\obj\Debug\Helpers.pdb
 C:\Users\mje\Desktop\TIMICO-PtpDss\TopicHelpers\bin\Debug\Helpers.dll
 C:\Users\mje\Desktop\TIMICO-PtpDss\TopicHelpers\bin\Debug\Helpers.pdb
 C:\Users\mje\Desktop\TIMICO-PtpDss\TopicHelpers\bin\Debug\nddsdotnet451.dll
-C:\Users\mje\Desktop\TIMICO-PtpDss\TopicHelpers\obj\Debug\Helpers.csprojResolveAssemblyReference.cache
 C:\Users\mje\Desktop\TIMICO-PtpDss\TopicHelpers\obj\Debug\Helpers.dll
 C:\Users\mje\Desktop\TIMICO-PtpDss\TopicHelpers\obj\Debug\Helpers.pdb

@@ -18,7 +18,7 @@ namespace Helpers
 
         public void Oscillate()
         {
-            if (_random.Next(2) > 0)
+            if (_random.Next(3) == 0)
             {
                 var milliSeconds = _random.Next(2); // Time is "ticking"
                 Time += new TimeSpan(0, 0, 0, 0, milliSeconds);
